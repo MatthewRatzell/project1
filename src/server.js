@@ -21,6 +21,7 @@ const urlStruct = {
     '/': htmlHandler.getIndex,
     '/style.css': htmlHandler.getCSS,
     '/main.js': htmlHandler.getJavaScript,
+    '/sw-card.js': htmlHandler.getCardJS,
     '/getCards': jsonHandler.getCards,
     notFound: jsonHandler.notFound,
   },
