@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>Task Manager</title>
+  <link rel="stylesheet" type="text/css" href="/style.css">
+  <script src="/main.js" type="text/javascript"></script>
+  <script>
+
+    window.onload = function(){
+      let addNewCardForm = document.querySelector("#addNewCardForm");
+      init(addNewCardForm);
+    }
+
+  </script>
+</head>
+
+<body>
+  <section id="top">
+    <h3>Enter Username below if User Has Saved Data</h3>
+    <form id="firebaseForm" action="/loadFirebase">
+
+      <label for="username">Username: </label>
+      <input id="nameField" type="text" name="username" />
+
+      <input type="submit" value="Load Profile" />
+    </form>
+    <hr></hr>
+    <h3>Enter Details of Card Below to Add</h3>
+
+    <form id="addNewCardForm" action="/addCard" method="post">
+
+      <label for="cardTitle">Title:</label>
+      <input id="title" type="text" name="cardTitle" />
+
+      <label for="cardDesctiption">Description:</label>
+      <input id="description" type="text" name="cardDescription" />
+
+      <label for="cardDueDate">Due Date:</label>
+      <input id="dueDate" type="datetime-local" name="cardDueDate">
+
+
+      <label for="fireBaseUserName">Firebase Code(optional):</label>
+      <input id="fireBaseUserName" type="text" name="fireBaseUserName">
+
+      <input type="submit" value="Add Card To Planner" />
+    </form>
+    <hr></hr>
+    <div class="card-list"></div>
+  </section>
+  <section id="content">
+  </section>
+</body>
+
+</html>
