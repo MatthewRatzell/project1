@@ -34,7 +34,7 @@ const getCards = (request, response) => {
   return respondJSON(request, response, 200, responseJSON);
 };
 
-//const returnCards
+// const returnCards
 // get meta info about user object
 const getCardsMeta = (request, response) => respondJSONMeta(request, response, 200);
 
@@ -98,7 +98,7 @@ const addCard = (request, response, body) => {
   return respondJSONMeta(request, response, responseCode);
 };
 
-const parseBody = (request, response, handler = addCard) => {
+const parseBody = (request, response) => {
   // The request will come in in pieces. We will store those pieces in this
   // body array.
   const body = [];
