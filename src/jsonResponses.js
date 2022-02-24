@@ -1,7 +1,9 @@
+const requirejs = require("requirejs");
 const query = require('querystring');
+
 // will be cleared on shutdown
 const cards = {};
-
+let username = null;
 // function to respond with a json object
 const respondJSON = (request, response, status, object, contentType = 'application/json') => {
   // object for our headers
@@ -34,6 +36,58 @@ const getCards = (request, response) => {
   return respondJSON(request, response, 200, responseJSON);
 };
 
+// get username may be needed most likely not
+const getUsername = (request, response) => {
+  const responseJSON = {
+    username,
+  };
+  return respondJSON(request, response, 200, responseJSON);
+};
+
+const setUsername = (request, response, body) => {
+  // default json message
+  const responseJSON = {
+    message: 'username is required or is already set!',
+  };
+/*
+  if (!body.username || body.username===username) {
+    responseJSON.id = 'missingParams';
+    return respondJSON(request, response, 400, responseJSON);
+  }
+  else if(){
+
+  }
+*/
+if (!body.username) {
+  responseJSON.id = 'missingParams';
+  return respondJSON(request, response, 400, responseJSON);
+}
+else if(body.username===username){
+  responseJSON.id = 'matching';
+  return respondJSON(request, response, 400, responseJSON);
+}
+  // default status code to 204 updated
+  let responseCode = 204;
+
+  // add or update fields for this user name
+  username = body.username;
+  //if the username was successfully set 
+  if (username != null) {
+    responseCode = 201;
+  }
+
+
+  // if response is created, then set our created message
+  // and sent response with a message
+  if (responseCode === 201) {
+    responseJSON.id = `username succesfully  set username is:${username}`;
+    responseJSON.message = 'Logged in and hopefully loaded';
+    return respondJSON(request, response, responseCode, responseJSON);
+  }
+
+  // if status cpde ios 204 it wont have a body
+  return respondJSONMeta(request, response, responseCode);
+}
 // const returnCards
 // get meta info about user object
 const getCardsMeta = (request, response) => respondJSONMeta(request, response, 200);
@@ -62,10 +116,6 @@ const addCard = (request, response, body) => {
     message: 'Name and age are both required.',
   };
 
-  // check to make sure we have both fields
-  // We might want more validation than just checking if they exist
-  // This could easily be abused with invalid types (such as booleans, numbers, etc)
-  // If either are missing, send back an error message as a 400 badRequest
   if (!body.title || !body.description || !body.dueDate) {
     responseJSON.id = 'missingParams';
     return respondJSON(request, response, 400, responseJSON);
@@ -74,9 +124,7 @@ const addCard = (request, response, body) => {
   // default status code to 204 updated
   let responseCode = 204;
 
-  // If the user doesn't exist yet
   if (!cards[body.title]) {
-    // Set the status code to 201 (created) and create an empty user
     responseCode = 201;
     cards[body.title] = {};
   }
@@ -86,6 +134,10 @@ const addCard = (request, response, body) => {
   cards[body.title].description = body.description;
   cards[body.title].dueDate = body.dueDate;
 
+  //if username exists add the card to where it belongs
+  if (username != null) {
+    console.log("username is not null");
+  }
   // if response is created, then set our created message
   // and sent response with a message
   if (responseCode === 201) {
@@ -134,10 +186,48 @@ const parseBody = (request, response) => {
 
     // Once we have the bodyParams object, we will call the handler function. We then
     // proceed much like we would with a GET request.
-    addCard(request, response, bodyParams);
+    handler(request, response, bodyParams);
   });
 };
+const parseBodyUser = (request, response) => {
+  // The request will come in in pieces. We will store those pieces in this
+  // body array.
+  const body = [];
 
+  // The body reassembly process is event driven, much like when we are streaming
+  // media like videos, etc. We will set up a few event handlers. This first one
+  // is for if there is an error. If there is, write it to the console and send
+  // back a 400-Bad Request error to the client.
+  request.on('error', (err) => {
+    console.dir(err);
+    response.statusCode = 400;
+    response.end();
+  });
+
+  // The second possible event is the "data" event. This gets fired when we
+  // get a piece (or "chunk") of the body. Each time we do, we will put it in
+  // the array. We will always recieve these chunks in the correct order.
+  request.on('data', (chunk) => {
+    body.push(chunk);
+  });
+
+  // The final event is when the request is finished sending and we have recieved
+  // all of the information. When the request "ends", we can proceed. Turn the body
+  // array into a single entity using Buffer.concat, then turn that into a string.
+  // With that string, we can use the querystring library to turn it into an object
+  // stored in bodyParams. We can do this because we know that the client sends
+  // us data in X-WWW-FORM-URLENCODED format. If it was in JSON we could use JSON.parse.
+  request.on('end', () => {
+    const bodyString = Buffer.concat(body).toString();
+    const bodyParams = query.parse(bodyString);
+
+    console.log(`Body params: ${bodyString}`);
+
+    // Once we have the bodyParams object, we will call the handler function. We then
+    // proceed much like we would with a GET request.
+    setUsername(request, response, bodyParams);
+  });
+};
 // set public modules
 module.exports = {
   getCards,
@@ -146,4 +236,7 @@ module.exports = {
   notFoundMeta,
   addCard,
   parseBody,
+  getUsername,
+  setUsername,
+  parseBodyUser
 };

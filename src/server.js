@@ -3,6 +3,7 @@ const url = require('url'); // pull in the url module
 // pull in the query string module
 const query = require('querystring');
 
+
 // pull in our html response handler file
 const htmlHandler = require('./htmlResponses.js');
 const jsonHandler = require('./jsonResponses.js');
@@ -22,7 +23,9 @@ const urlStruct = {
     '/style.css': htmlHandler.getCSS,
     '/main.js': htmlHandler.getJavaScript,
     '/sw-card.js': htmlHandler.getCardJS,
+    '/firebase.js': htmlHandler.getFirebaseJS,
     '/getCards': jsonHandler.getCards,
+    '/getUsername': jsonHandler.getUsername,
     notFound: jsonHandler.notFound,
   },
   HEAD: {
@@ -31,6 +34,7 @@ const urlStruct = {
   },
   POST: {
     '/addCard': jsonHandler.parseBody,
+    '/setUsername':jsonHandler.parseBodyUser,
     notFound: jsonHandler.notFoundMeta,
   },
 };

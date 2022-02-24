@@ -1,3 +1,5 @@
+import * as firebase from "/firebase.js";
+
 // function that handles card creation
 const createCards = (obj) => {
   const list = document.querySelector('.card-list');
@@ -100,7 +102,7 @@ const sendPost = async (addNewCardForm) => {
   const titleField = addNewCardForm.querySelector('#title');
   const descriptionField = addNewCardForm.querySelector('#description');
   const dueDateField = addNewCardForm.querySelector('#dueDate');
-  const firebaseUserNameField = addNewCardForm.querySelector('#fireBaseUserName');
+
 
   // not passing in firebaseusernamefield yet
   // Build a data string in the FORM-URLENCODED format.
@@ -126,7 +128,7 @@ const sendPost = async (addNewCardForm) => {
 };
 
 // function to send post data back to our server
-const addUsersFromFireBase = async (firebaseForm) => {
+const setFireBaseUserName = async (firebaseForm) => {
   // Grab all the info from the form
 
   // get the action we are trying to perform
@@ -134,12 +136,12 @@ const addUsersFromFireBase = async (firebaseForm) => {
   const nameMethod = firebaseForm.getAttribute('method');
 
   // get the data inside the form that we need
-  const userNameField = firebaseForm.querySelector('#userNameField');
+  const userNameField = firebaseForm.querySelector('#usernameField');
 
 ////////////////////////////////////////////////////////////////////////////////////////
   // not passing in firebaseusernamefield yet
   // Build a data string in the FORM-URLENCODED format.
-  const formData = `title=${titleField.value}&description=${descriptionField.value}&dueDate=${dueDateField.value}&firebaseUserName=${firebaseUserNameField.value}`;
+  const formData = `username=${userNameField.value}`;
 
   // Make a fetch request and await a response. Set the method to
   // the one provided by the form (POST). Set the headers. Content-Type
@@ -162,6 +164,7 @@ const addUsersFromFireBase = async (firebaseForm) => {
 };
 
 const init = () => {
+  //firebase.displayApp();
   // Grab the form
   const addNewCardForm = document.querySelector('#addNewCardForm');
 
@@ -180,13 +183,20 @@ const init = () => {
     return false;
   };
 
+  // function that handles adding a user to our json object
+  const logIn = (e) => {
+    e.preventDefault();
+    setFireBaseUserName();
+    loadSavedCards();
+    return false;
+  };
   // Call addUser when the submit event fires on the form.
   addNewCardForm.addEventListener('submit', addUser);
 
   // add event listener
   addNewCardForm.addEventListener('submit', getCards);
 
-  firebaseForm.addEventListener('submit', addUsersFromFireBase);
+  firebaseForm.addEventListener('submit', logIn);
 };
 
 window.onload = init;
