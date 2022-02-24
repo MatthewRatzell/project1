@@ -20,14 +20,14 @@ const db = getDatabase();
 //function that server will use to write data
 const writeUserData = (title,description,dueDate,username)=>{
     //grab our username
-    let userName = parseUser(username);
+    const userDir = ref(db, `${username}/`);
     //set the data where that jimmy jawn belong
-    set(userName,{
+    set(userDir,{
         title:title,
         description:description,
         dueDate:dueDate,
     });
-
+    console.log(`userDir:${userDir}`);
 }
 
 /*
@@ -53,4 +53,4 @@ const displayApp = () => {
     console.log(app);
 }
 
-export{displayApp};
+export{displayApp,writeUserData};

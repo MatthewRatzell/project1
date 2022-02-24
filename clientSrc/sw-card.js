@@ -32,7 +32,7 @@ h2,h3
     <h2 id="title" class="has-text-centered is-size-5">25</h2>
     <h2 class="has-text-centered is-size-5" id="description">25</h2>
     <h2 id="dueDate" class="has-text-centered is-size-5">25</h2>
-    <h2 class="has-text-centered is-size-5" id="firebaseUserName">25</h2>
+
 
 </div>
   <body>
@@ -67,24 +67,24 @@ class swCard extends HTMLElement {
 
   // telling component to observe/watch these values
   static get observedAttributes() {
-    return ['data-title', 'data-description', 'data-duedate', 'data-firebaseusername'];
+    return ['data-title', 'data-description', 'data-duedate'];
   }
 
   render() {
     this.titleDOM = this.shadowRoot.querySelector('#title');
     this.descriptionDOM = this.shadowRoot.querySelector('#description');
     this.dueDateDOM = this.shadowRoot.querySelector('#dueDate');
-    this.firebaserUserNameDOM = this.shadowRoot.querySelector('#firebaseUserName');
+
 
     const title = this.getAttribute('data-title') ? this.getAttribute('data-title') : '<i>...game title...</i>';
     const description = this.getAttribute('data-description') ? this.getAttribute('data-description') : '0';
     const dueDate = this.getAttribute('data-duedate') ? this.getAttribute('data-duedate') : '<i>...game title...</i>';
-    const firebaseUserName = this.getAttribute('data-firebaseusername') ? this.getAttribute('data-firebaseusername') : '0';
+
 
     this.titleDOM.innerHTML = `Title:${title}`;
     this.descriptionDOM.innerHTML = `Description:${description}`;
     this.dueDateDOM.innerHTML = `Due Date:${dueDate}`;
-    this.firebaserUserNameDOM.innerHTML = `Username Entered:${firebaseUserName}`;
+
   }
 }// end class
 customElements.define('sw-card', swCard);

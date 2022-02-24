@@ -49,23 +49,12 @@ const setUsername = (request, response, body) => {
   const responseJSON = {
     message: 'username is required or is already set!',
   };
-/*
+
   if (!body.username || body.username===username) {
     responseJSON.id = 'missingParams';
     return respondJSON(request, response, 400, responseJSON);
   }
-  else if(){
 
-  }
-*/
-if (!body.username) {
-  responseJSON.id = 'missingParams';
-  return respondJSON(request, response, 400, responseJSON);
-}
-else if(body.username===username){
-  responseJSON.id = 'matching';
-  return respondJSON(request, response, 400, responseJSON);
-}
   // default status code to 204 updated
   let responseCode = 204;
 
@@ -80,7 +69,7 @@ else if(body.username===username){
   // if response is created, then set our created message
   // and sent response with a message
   if (responseCode === 201) {
-    responseJSON.id = `username succesfully  set username is:${username}`;
+    responseJSON.id = `username succesfully  set`;
     responseJSON.message = 'Logged in and hopefully loaded';
     return respondJSON(request, response, responseCode, responseJSON);
   }
@@ -186,7 +175,7 @@ const parseBody = (request, response) => {
 
     // Once we have the bodyParams object, we will call the handler function. We then
     // proceed much like we would with a GET request.
-    handler(request, response, bodyParams);
+    addCard(request, response, bodyParams);
   });
 };
 const parseBodyUser = (request, response) => {
