@@ -61,7 +61,7 @@ class swCard extends HTMLElement {
 
   // updating the code
   attributeChangedCallback(attributeName, oldVal, newVal) {
-    console.log(attributeName, oldVal, newVal);
+   // console.log(attributeName, oldVal, newVal);
     this.render();
   }
 

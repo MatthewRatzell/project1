@@ -10,15 +10,19 @@
 </head>
 
 <body>
+  <section id="content">
+  </section>
   <section id="top">
     <h3>Enter Username below if User Has Saved Data</h3>
     <form id="firebaseForm" action="/setUsername" method="post">
       <label for="username">Username: </label>
       <input id="usernameField" type="text" name="username" />
-      <input type="submit" value="Load Profile" />
+      <input id="usernameBTN" type="submit" value="Load Profile" />
     </form>
     <hr>
     </hr>
+  </section>
+  <section id="addCards">
     <h3>Enter Details of Card Below to Add</h3>
 
     <form id="addNewCardForm" action="/addCard" method="post">
@@ -33,12 +37,12 @@
       <input id="dueDate" type="datetime-local" name="cardDueDate">
       <input type="submit" value="Add Card To Planner" />
     </form>
-    <hr>
-    </hr>
-    <div class="card-list"></div>
   </section>
-  <section id="content">
-  </section>
+  <hr>
+  </hr>
+  <div class="card-list"></div>
+
+
 </body>
 
 </html>
