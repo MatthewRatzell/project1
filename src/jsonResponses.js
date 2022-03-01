@@ -17,6 +17,7 @@ const respondJSON = (request, response, status, object, contentType = 'applicati
   response.write(JSON.stringify(object));
   // response.write(JSON.parse);
   response.end();
+
 };
 
 // function to respond without json body
@@ -34,6 +35,7 @@ const getCards = (request, response) => {
   const responseJSON = {
     cards,
   };
+
   return respondJSON(request, response, 200, responseJSON);
 };
 
@@ -103,7 +105,7 @@ const notFoundMeta = (request, response) => {
 const addCard = (request, response, body) => {
   // default json message
   const responseJSON = {
-    message: 'Name and age are both required.',
+    message: 'Title, Description, and Due date are all required',
   };
 
   if (!body.title || !body.description || !body.dueDate) {

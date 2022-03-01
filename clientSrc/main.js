@@ -5,8 +5,10 @@ let cardData = [];
 
 // function that handles card creation
 const createCards = (obj) => {
+  //update our card data
+  cardData.push(obj);
   const list = document.querySelector('.card-list');
-  console.log(`Title: ${obj.title},Description: ${obj.description},Due Date: ${obj.dueDate},firebase Username: ${obj.firebaseUserName}`);
+  //console.log(`Title: ${obj.title},Description: ${obj.description},Due Date: ${obj.dueDate}`);
 
   const swCard = document.createElement('sw-card');
 
@@ -105,18 +107,21 @@ const setName = async () => {
   //grab the name from the response
   const name = await response.json();
 
-
   //set our name to whatever we get from the server
-  username = name.username;
+  if (name.username != null) {
+    username = name.username;
+    requestUpdate();
+  }
+
 
 
   updateDOMAfterLogIn();
-
 };
 // function to send post data back to our server
 const sendPost = async (addNewCardForm) => {
   // Grab all the info from the form
-
+  let exists = false;
+  
   // get the action we are trying to perform
   const nameAction = addNewCardForm.getAttribute('action');
   const nameMethod = addNewCardForm.getAttribute('method');
@@ -126,29 +131,33 @@ const sendPost = async (addNewCardForm) => {
   const descriptionField = addNewCardForm.querySelector('#description');
   const dueDateField = addNewCardForm.querySelector('#dueDate');
 
-
-  // not passing in firebaseusernamefield yet
+  //check to make sure it doesnt exist
+  for(let i = 0;i<cardData.length;i++){
+    //
+    if(cardData[i].title == titleField.value){
+      exists = true;
+    }
+  }
+  
   // Build a data string in the FORM-URLENCODED format.
   const formData = `title=${titleField.value}&description=${descriptionField.value}&dueDate=${dueDateField.value}`;
   console.log(`Method:${nameMethod}Action:${nameAction}`);
-  // Make a fetch request and await a response. Set the method to
-  // the one provided by the form (POST). Set the headers. Content-Type
-  // is the type of data we are sending. Accept is the data we would like
-  // in response. Then add our FORM-URLENCODED string as the body of the request.
-  const response = await fetch(nameAction, {
-    // nameMethod will be post
-    method: nameMethod,
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded',
-      Accept: 'application/json',
-    },
-    // body of this json object
-    body: formData,
-  });
 
+  if (!exists) {
+    const response = await fetch(nameAction, {
+      // nameMethod will be post
+      method: nameMethod,
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        Accept: 'application/json',
+      },
+      // body of this json object
+      body: formData,
+    });
+    // Once we have a response, handle it.
+    handleResponse(response);
+  }
 
-  // Once we have a response, handle it.
-  handleResponse(response);
 };
 // function to send post data back to our server
 const sendPostFromFireBase = async (obj) => {
@@ -171,16 +180,12 @@ const sendPostFromFireBase = async (obj) => {
     body: formData,
   });
 
-  // Once we have a response, handle it.
-  handleResponse(response);
 };
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////Handle Logging In//////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////
 // function to send post data back to our server
 const setFireBaseUserName = async (firebaseForm) => {
-  // Grab all the info from the form
-
   // get the action we are trying to perform
   const nameAction = firebaseForm.getAttribute('action');
   const nameMethod = firebaseForm.getAttribute('method');
@@ -220,16 +225,10 @@ const setFireBaseUserName = async (firebaseForm) => {
 const loadSavedCardsFromFireBase = async () => {
   //this is done in firebase
   if (username != null) {
-    cardData = await firebase.loadScreen(username);
-    console.log(cardData);
-  }
-  console.log(data);
-  //go through and callpost on each card
-  for (let i = 0; i < cardData.length; i++) {
-    console.log(`ObjTit:${cardData[i].title}ObjDes:${cardData[i].description}ObjDD:${cardData[i].dueDate}`);
-    //sendPostFromFireBase(cardData[i]);
+    await firebase.loadScreen(username);
   }
 };
+
 const updateDOMAfterLogIn = () => {
   if (username != null) {
     document.getElementById("usernameBTN").disabled = true;
@@ -268,7 +267,12 @@ const init = async () => {
       const descriptionField = addNewCardForm.querySelector('#description');
       const dueDateField = addNewCardForm.querySelector('#dueDate');
 
-      firebase.writeUserData(titleField.value, descriptionField.value, dueDateField.value, username);
+      if (titleField.value != null && descriptionField.value != null && dueDateField.value != null) {
+        firebase.writeUserData(titleField.value, descriptionField.value, dueDateField.value, username);
+      }
+      else {
+        console.log("username exists but invalid entrys");
+      }
     }
     return false;
   };
@@ -278,7 +282,8 @@ const init = async () => {
     e.preventDefault();
     //await setting the name so it can be set before next function
     await setFireBaseUserName(firebaseForm);
-    loadSavedCardsFromFireBase();
+    await loadSavedCardsFromFireBase();
+
     updateDOMAfterLogIn();
 
     return false;
@@ -302,4 +307,4 @@ const init = async () => {
 
 window.onload = init;
 
-export { createCards, sendPostFromFireBase, handleResponse };
+export { createCards, sendPostFromFireBase, handleResponse, requestUpdate };
