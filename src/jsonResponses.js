@@ -4,6 +4,7 @@ const query = require('querystring');
 // will be cleared on shutdown
 const cards = {};
 let username = null;
+
 // function to respond with a json object
 const respondJSON = (request, response, status, object, contentType = 'application/json') => {
   // object for our headers

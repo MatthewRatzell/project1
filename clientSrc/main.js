@@ -1,7 +1,8 @@
 import * as firebase from "/firebase.js";
 
 let username;
-let cardData=[];
+let cardData = [];
+
 // function that handles card creation
 const createCards = (obj) => {
   const list = document.querySelector('.card-list');
@@ -37,6 +38,8 @@ const handleResponse = async (response, parseResponse) => {
       content.innerHTML = `<b>${obj.id}</b>`;
       content.innerHTML += `<p>${obj.message}</p>`;
     }
+    /////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////
   } else if (response.status === 201 || response.status === 204) {
     // this comment is here to trick the linter into think their is code
     const obj = await response.json();
@@ -45,6 +48,8 @@ const handleResponse = async (response, parseResponse) => {
       content.innerHTML = `<b>${obj.id}</b>`;
       content.innerHTML += `<p>${obj.message}</p>`;
     }
+    /////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////
   } else if (response.status === 400) {
     const obj = await response.json();
     //making sure we log it out to our console
@@ -52,6 +57,8 @@ const handleResponse = async (response, parseResponse) => {
       content.innerHTML = `<b>${obj.id}</b>`;
       content.innerHTML += `<p>${obj.message}</p>`;
     }
+    /////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////
   } else {
     const obj = await response.json();
     //making sure we log it out to our console
@@ -60,6 +67,8 @@ const handleResponse = async (response, parseResponse) => {
       content.innerHTML += `<p>${obj.message}</p>`;
     }
   }
+  /////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////
 };
 // function to send request. This is marked as async since we will use await.
 const requestUpdate = async () => {
@@ -80,6 +89,30 @@ const requestUpdate = async () => {
   // requests so we can do an inline boolean check, which will return a true or false to pass in.
   handleResponse(response, method === 'get');
 };
+const setName = async () => {
+  // hardcodingg the method
+  const method = 'get';
+  const url = '/getUsername';
+
+  // Await our fetch response. Go to the URL, use the right method, and attach the headers.
+  const response = await fetch(url, {
+    method,
+    headers: {
+      Accept: 'application/json',
+    },
+  });
+
+  //grab the name from the response
+  const name = await response.json();
+
+
+  //set our name to whatever we get from the server
+  username = name.username;
+
+
+  updateDOMAfterLogIn();
+
+};
 // function to send post data back to our server
 const sendPost = async (addNewCardForm) => {
   // Grab all the info from the form
@@ -97,7 +130,7 @@ const sendPost = async (addNewCardForm) => {
   // not passing in firebaseusernamefield yet
   // Build a data string in the FORM-URLENCODED format.
   const formData = `title=${titleField.value}&description=${descriptionField.value}&dueDate=${dueDateField.value}`;
-
+  console.log(`Method:${nameMethod}Action:${nameAction}`);
   // Make a fetch request and await a response. Set the method to
   // the one provided by the form (POST). Set the headers. Content-Type
   // is the type of data we are sending. Accept is the data we would like
@@ -112,19 +145,15 @@ const sendPost = async (addNewCardForm) => {
     // body of this json object
     body: formData,
   });
-  
-    // Parse the response to json. This is an async function, so we will await it.
-    const obj = await response.json();
 
-    for (let i = 0; i < Object.entries(obj.cards).length; i++) {
-      createCards(Object.values(obj.cards)[i]);
-    }
+
   // Once we have a response, handle it.
- // handleResponse(response);
+  handleResponse(response);
 };
 // function to send post data back to our server
 const sendPostFromFireBase = async (obj) => {
-console.log(`title=${obj.title}&description=${obj.description}&dueDate=${obj.dueDate}`);
+
+  // console.log(`title=${obj.title}&description=${obj.description}&dueDate=${obj.dueDate}`);
   const formData = `title=${obj.title}&description=${obj.description}&dueDate=${obj.dueDate}`;
 
   // Make a fetch request and await a response. Set the method to
@@ -133,7 +162,7 @@ console.log(`title=${obj.title}&description=${obj.description}&dueDate=${obj.due
   // in response. Then add our FORM-URLENCODED string as the body of the request.
   const response = await fetch('/addCard', {
     // nameMethod will be post
-    method: 'POST',
+    method: 'post',
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded',
       Accept: 'application/json',
@@ -188,26 +217,32 @@ const setFireBaseUserName = async (firebaseForm) => {
   handleResponse(response);
   ///////////////////////////////////////////////////////////////////////////////////////////////
 };
-const loadSavedCardsFromFireBase = () => {
+const loadSavedCardsFromFireBase = async () => {
   //this is done in firebase
-  if (username != null || username == "") {
-    cardData = firebase.loadScreen(username);
+  if (username != null) {
+    cardData = await firebase.loadScreen(username);
+    console.log(cardData);
+  }
+  console.log(data);
+  //go through and callpost on each card
+  for (let i = 0; i < cardData.length; i++) {
+    console.log(`ObjTit:${cardData[i].title}ObjDes:${cardData[i].description}ObjDD:${cardData[i].dueDate}`);
+    //sendPostFromFireBase(cardData[i]);
   }
 };
 const updateDOMAfterLogIn = () => {
-  //this is done in firebase
-  if (username != null || username == "") {
+  if (username != null) {
     document.getElementById("usernameBTN").disabled = true;
   }
 };
-function fixDOM() {
-  updateDOMAfterLogIn();
-}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////
-const init = () => {
-  updateDOMAfterLogIn();
+const init = async () => {
+  setName();
+  //////////////////////////////////////////////////////////////////
+  ///////////////////////////////////////////////////////////////////
   // Grab the form
   const addNewCardForm = document.querySelector('#addNewCardForm');
 
@@ -243,9 +278,9 @@ const init = () => {
     e.preventDefault();
     //await setting the name so it can be set before next function
     await setFireBaseUserName(firebaseForm);
-    await loadSavedCardsFromFireBase();
+    loadSavedCardsFromFireBase();
     updateDOMAfterLogIn();
-    //updateDOM
+
     return false;
   };
 
@@ -264,7 +299,7 @@ const init = () => {
 
 
 
-//to run
-window.onbeforeunload = fixDOM;
+
 window.onload = init;
-export{createCards,sendPostFromFireBase};
+
+export { createCards, sendPostFromFireBase, handleResponse };

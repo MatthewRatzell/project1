@@ -16,9 +16,6 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getDatabase();
 
-
-
-
 //function that server will use to write data
 const writeUserData = (title,description,dueDate,username)=>{
     //grab our username
@@ -35,7 +32,7 @@ const writeUserData = (title,description,dueDate,username)=>{
 //function that will handle setting up our community page another helper function
 function loadScreen(username)
 {
-    
+    let cards=[];
     const usersDirForLinker = ref(db,`users/${username}`);
     
     //set up our onvalue 
@@ -43,36 +40,14 @@ function loadScreen(username)
 
     //make sure we actually get data prepared to be returned to main
     function likesUpdatedLoadCommunity(snapshot)
-    {
-        let cards=[];
-       // console.log(snapshot.val());
+    {   
         snapshot.forEach(card => {
-            const childKey = card.val();
-            main.sendPostFromFireBase(childKey);
-            //console.log(childKey);
-            cards.push(childKey);
-          });
-          
-          //now create the cards
-
+            cards.push(card.val());         
+          });      
     }
-    
-    
- 
+    return cards;
 }
-/*
-var query = ref(db, `users/`).orderByKey();
-query.once("value")
-  .then(function(snapshot) {
-    snapshot.forEach(function(childSnapshot) {
-      // key will be "ada" the first time and "alan" the second time
-      var key = childSnapshot.key;
-      console.log("key");
-      // childData will be the actual contents of the child
-      var childData = childSnapshot.val();
-  });
-});
-*/
+
 //helper function for write userData
 const parseUser=(username)=>{
     //create db dir
