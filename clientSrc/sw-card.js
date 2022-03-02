@@ -7,6 +7,7 @@ h2,h3
     text-align: center;
     font-size: 2.0rem;
     margin-top: 0;
+    
 }
 .card 
   {
@@ -15,8 +16,8 @@ h2,h3
     background-color: #E27D60 !important;
     height: 350px;
     width: 306px;
-    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
-    transition: 0.3s;
+    margin-bottom:10px;
+    justify-content:center;
   }
   
 .card:hover 
@@ -25,17 +26,21 @@ h2,h3
   }
 
 </style>
+
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css">
 <body>
+
 <div class="card">
 
-    <h2 id="title" class="has-text-centered is-size-5">25</h2>
-    <h2 class="has-text-centered is-size-5" id="description">25</h2>
-    <h2 id="dueDate" class="has-text-centered is-size-5">25</h2>
+    <h2 id="title" class="has-text-centered is-size-3">25</h2>
+    <hr>
+    <h2 class="has-text-centered is-size-4" id="description">25</h2>
+    <hr>
+    <h2 id="dueDate" class="has-text-centered is-size-4">25</h2>
 
 
 </div>
-  <body>
+  </body>
 
 
 `;
@@ -43,6 +48,7 @@ h2,h3
 class swCard extends HTMLElement {
   constructor() {
     super();
+    
     // attach a shadowdom treeto this instance this creasts a shadown root for us
     this.attachShadow({ mode: 'open' });// allows debugging when open
     // clone template and append it
@@ -50,6 +56,7 @@ class swCard extends HTMLElement {
   }
 
   connectedCallback() {
+    ondrop = function(){return false;};
     // making sure we call our render function
     this.render();
   }
@@ -61,7 +68,7 @@ class swCard extends HTMLElement {
 
   // updating the code
   attributeChangedCallback(attributeName, oldVal, newVal) {
-   // console.log(attributeName, oldVal, newVal);
+    // console.log(attributeName, oldVal, newVal);
     this.render();
   }
 
@@ -81,10 +88,29 @@ class swCard extends HTMLElement {
     const dueDate = this.getAttribute('data-duedate') ? this.getAttribute('data-duedate') : '<i>...game title...</i>';
 
 
-    this.titleDOM.innerHTML = `Title:${title}`;
+    this.titleDOM.innerHTML = `${title}`;
     this.descriptionDOM.innerHTML = `Description:${description}`;
     this.dueDateDOM.innerHTML = `Due Date:${dueDate}`;
 
   }
 }// end class
+
+function drag(ev) {
+  ev.dataTransfer.setData("text", ev.target.id);
+}
+
+function allowDrop(ev) {
+  ev.preventDefault();
+}
+
+function drop(ev) {
+  ev.preventDefault();
+  if (ev.target.className === 'clonedDiv' || ev.target.className === "card")
+      return;
+  var data = ev.dataTransfer.getData("text");
+  //console.log(document.getElementById(data));
+  ev.target.appendChild(document.getElementById(data));
+}
+
+
 customElements.define('sw-card', swCard);

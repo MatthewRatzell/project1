@@ -1,4 +1,3 @@
-const requirejs = require("requirejs");
 const query = require('querystring');
 
 // will be cleared on shutdown
@@ -17,7 +16,6 @@ const respondJSON = (request, response, status, object, contentType = 'applicati
   response.write(JSON.stringify(object));
   // response.write(JSON.parse);
   response.end();
-
 };
 
 // function to respond without json body
@@ -53,7 +51,7 @@ const setUsername = (request, response, body) => {
     message: 'username is required or is already set!',
   };
 
-  if (!body.username || body.username===username) {
+  if (!body.username || body.username === username) {
     responseJSON.id = 'missingParams';
     return respondJSON(request, response, 400, responseJSON);
   }
@@ -63,23 +61,22 @@ const setUsername = (request, response, body) => {
 
   // add or update fields for this user name
   username = body.username;
-  //if the username was successfully set 
+  // if the username was successfully set
   if (username != null) {
     responseCode = 201;
   }
 
-
   // if response is created, then set our created message
   // and sent response with a message
   if (responseCode === 201) {
-    responseJSON.id = `username succesfully  set`;
+    responseJSON.id = 'username succesfully  set';
     responseJSON.message = 'Logged in and hopefully loaded';
     return respondJSON(request, response, responseCode, responseJSON);
   }
 
   // if status cpde ios 204 it wont have a body
   return respondJSONMeta(request, response, responseCode);
-}
+};
 // const returnCards
 // get meta info about user object
 const getCardsMeta = (request, response) => respondJSONMeta(request, response, 200);
@@ -126,9 +123,9 @@ const addCard = (request, response, body) => {
   cards[body.title].description = body.description;
   cards[body.title].dueDate = body.dueDate;
 
-  //if username exists add the card to where it belongs
+  // if username exists add the card to where it belongs
   if (username != null) {
-    console.log("username is not null");
+    console.log('username is not null');
   }
   // if response is created, then set our created message
   // and sent response with a message
@@ -230,5 +227,5 @@ module.exports = {
   parseBody,
   getUsername,
   setUsername,
-  parseBodyUser
+  parseBodyUser,
 };

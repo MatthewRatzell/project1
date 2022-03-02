@@ -4,45 +4,69 @@
 <head>
   <title>Task Manager</title>
   <link rel="stylesheet" type="text/css" href="/style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css">
   <script src="/firebase.js" type="module"></script>
   <script src="/sw-card.js" type="text/javascript"></script>
   <script src="/main.js" type="module"></script>
+
 </head>
 
 <body>
+
   <section id="content">
   </section>
   <section id="top">
-    <h3>Enter Username below if User Has Saved Data</h3>
+    <h3 class="addCardText is-size-3 has-text-centered">Enter Username below if User Has Saved Data</h3>
     <form id="firebaseForm" action="/setUsername" method="post">
-      <label for="username">Username: </label>
-      <input id="usernameField" type="text" name="username" />
-      <input id="usernameBTN" type="submit" value="Load Profile" />
+      <label class="is-size-5 has-text-centered" for="username">Username: </label>
+      <input class="is-size-5 has-text-centered" id="usernameField" type="text" name="username" />
+      <input class="is-size-5 has-text-centered" id="usernameBTN" class="button" type="submit" value="Load Profile" />
     </form>
     <hr>
     </hr>
   </section>
   <section id="addCards">
-    <h3>Enter Details of Card Below to Add</h3>
+    <h3 class="addCardText is-size-3 has-text-centered">Add Card</h3>
 
     <form id="addNewCardForm" action="/addCard" method="post">
 
-      <label for="cardTitle">Title:</label>
-      <input id="title" type="text" name="cardTitle" />
+      <label class="is-size-5 has-text-centered" for="cardTitle">Title:</label>
+      <input class="is-size-5 has-text-centered" id="title" type="text" name="cardTitle" />
 
-      <label for="cardDesctiption">Description:</label>
-      <input id="description" type="text" name="cardDescription" />
+      <label class="is-size-5 has-text-centered" for="cardDesctiption">Description:</label>
+      <input class="is-size-5 has-text-centered" id="description" type="text" name="cardDescription" />
 
-      <label for="cardDueDate">Due Date:</label>
-      <input id="dueDate" type="datetime-local" name="cardDueDate">
-      <input type="submit" value="Add Card To Planner" />
+      <label class="is-size-5 has-text-centered" for="cardDueDate">Due Date:</label>
+      <input class="is-size-5 has-text-centered" id="dueDate" type="datetime-local" name="cardDueDate">
+      <input class="is-size-5 has-text-centered" type="submit" class="button" value="Add Card To Planner" />
     </form>
   </section>
   <hr>
   </hr>
-  <div class="card-list"></div>
+
+  <div class="container">
+    <div class="taskboard-heading">
+      <strong class="taskboard-heading-text is-size-2 has-text-centered">Task Board</strong>
+    </div>
+    <div class="taskboard">
+      <div class="taskboard-block is-size-3 has-text-centered" ondrop="drop(event)" ondragover="allowDrop(event)">
+        <strong>To Do</strong>
+        <div id="card-list">
+        </div>
+      </div>
+      <div class="taskboard-block is-size-3 has-text-centered" ondrop="drop(event)" ondragover="allowDrop(event)">
+        <strong>In Progress</strong>
+      </div>
+      <div class="taskboard-block is-size-3 has-text-centered" ondrop="drop(event)" ondragover="allowDrop(event)">
+        <strong>Done</strong>
+      </div>
+    </div>
+  </div>
 
 
+
+  <div id="burnerDiv" draggable="true" ondragstart="drag(event)" ondrop="return false;">
+  </div>
 </body>
 
 </html>

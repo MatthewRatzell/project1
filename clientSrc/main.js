@@ -7,8 +7,22 @@ let cardData = [];
 const createCards = (obj) => {
   //update our card data
   cardData.push(obj);
-  const list = document.querySelector('.card-list');
-  //console.log(`Title: ${obj.title},Description: ${obj.description},Due Date: ${obj.dueDate}`);
+
+  const list = document.querySelector('#card-list');
+
+  //create a div to put the card into
+  const div = document.querySelector('#burnerDiv');
+  //create a copy of our good div
+  const clone = div.cloneNode(true);
+  //make sure we change its class name
+  clone.className = 'clonedDiv';
+  //give it a random unique id
+  clone.id = `${(Math.random() + 1).toString(36).substring(7)}`;
+
+
+  clone.style.display = 'flex';
+  clone.style.justifyContent = "center";
+  list.appendChild(clone);
 
   const swCard = document.createElement('sw-card');
 
@@ -17,7 +31,10 @@ const createCards = (obj) => {
   swCard.dataset.duedate = obj.dueDate || '';
   swCard.dataset.firebaseusername = obj.firebaseUserName || '';
 
-  list.appendChild(swCard);
+  //add the container to the list
+  //list.appendChild(clone);
+  //add the card to the container
+  clone.appendChild(swCard);
 };
 const handleResponse = async (response, parseResponse) => {
   // Grab the content section so that we can write to it
@@ -25,9 +42,12 @@ const handleResponse = async (response, parseResponse) => {
 
   // If we should parse a response (meaning we made a get request)
   if (parseResponse) {
-    const list = document.querySelector('.card-list');
-    list.innerHTML = '';
 
+    const burnerDivs = document.querySelectorAll('.clonedDiv');
+
+    for (let i = 0; i < burnerDivs.length; i++) {
+      burnerDivs[i].remove();
+    }
     // Parse the response to json. This is an async function, so we will await it.
     const obj = await response.json();
 
@@ -43,33 +63,17 @@ const handleResponse = async (response, parseResponse) => {
     /////////////////////////////////////////////////////////////////////////
     /////////////////////////////////////////////////////////////////////////
   } else if (response.status === 201 || response.status === 204) {
-    // this comment is here to trick the linter into think their is code
-    const obj = await response.json();
-    //making sure we log it out to our console
-    if (obj.message) {
-      content.innerHTML = `<b>${obj.id}</b>`;
-      content.innerHTML += `<p>${obj.message}</p>`;
-    }
-    /////////////////////////////////////////////////////////////////////////
+
+    //////////////////////in console////////////////////////////////////////
     /////////////////////////////////////////////////////////////////////////
   } else if (response.status === 400) {
-    const obj = await response.json();
-    //making sure we log it out to our console
-    if (obj.message) {
-      content.innerHTML = `<b>${obj.id}</b>`;
-      content.innerHTML += `<p>${obj.message}</p>`;
-    }
-    /////////////////////////////////////////////////////////////////////////
+
+    ///////////////////////in console done by server///////////////////////////////////////
     /////////////////////////////////////////////////////////////////////////
   } else {
-    const obj = await response.json();
-    //making sure we log it out to our console
-    if (obj.message) {
-      content.innerHTML = `<b>${obj.id}</b>`;
-      content.innerHTML += `<p>${obj.message}</p>`;
-    }
+
   }
-  /////////////////////////////////////////////////////////////////////////
+  ////////////////////////////why you still reading these////////////////////////////////
   /////////////////////////////////////////////////////////////////////////
 };
 // function to send request. This is marked as async since we will use await.
@@ -121,7 +125,7 @@ const setName = async () => {
 const sendPost = async (addNewCardForm) => {
   // Grab all the info from the form
   let exists = false;
-  
+
   // get the action we are trying to perform
   const nameAction = addNewCardForm.getAttribute('action');
   const nameMethod = addNewCardForm.getAttribute('method');
@@ -132,13 +136,13 @@ const sendPost = async (addNewCardForm) => {
   const dueDateField = addNewCardForm.querySelector('#dueDate');
 
   //check to make sure it doesnt exist
-  for(let i = 0;i<cardData.length;i++){
+  for (let i = 0; i < cardData.length; i++) {
     //
-    if(cardData[i].title == titleField.value){
+    if (cardData[i].title == titleField.value) {
       exists = true;
     }
   }
-  
+
   // Build a data string in the FORM-URLENCODED format.
   const formData = `title=${titleField.value}&description=${descriptionField.value}&dueDate=${dueDateField.value}`;
   console.log(`Method:${nameMethod}Action:${nameAction}`);
@@ -231,7 +235,8 @@ const loadSavedCardsFromFireBase = async () => {
 
 const updateDOMAfterLogIn = () => {
   if (username != null) {
-    document.getElementById("usernameBTN").disabled = true;
+    document.getElementById("top").style.display = "none";
+    //document.getElementById("usernameBTN").disabled = true;
   }
 };
 
@@ -297,13 +302,6 @@ const init = async () => {
 
   firebaseForm.addEventListener('submit', logIn);
 };
-
-
-
-
-
-
-
 
 window.onload = init;
 
