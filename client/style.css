@@ -48,6 +48,7 @@ overflow: auto;
   min-width: 50%;
   margin: auto;
   display: flex;
+
   flex-direction: column;
 }
 
@@ -80,10 +81,12 @@ overflow: auto;
   min-height: 4.5rem;
   border-radius: 0.3rem;
   background-color: rgb(71, 69, 69);
+
 }
 
 #body2{
   background-color: black;
+  
 }
 
 sw-card{
